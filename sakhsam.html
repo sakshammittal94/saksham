@@ -1,0 +1,369 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Total Marks & Percentage Calculator</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #dbeafe, #e9d5ff);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 650px;
+            margin: 20px auto;
+            background: white;
+            padding: 25px;
+            border-radius: 18px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+        }
+
+        h1 {
+            text-align: center;
+            color: #4f46e5;
+            font-size: 27px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 25px;
+        }
+
+        .subject {
+            display: grid;
+            grid-template-columns: 1.3fr 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        input {
+            width: 100%;
+            min-width: 0;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 15px;
+        }
+
+        input:focus {
+            outline: 2px solid #818cf8;
+            border-color: #4f46e5;
+        }
+
+        .labels {
+            display: grid;
+            grid-template-columns: 1.3fr 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 8px;
+            color: #555;
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        button {
+            border: none;
+            padding: 12px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .add-btn {
+            background: #e0e7ff;
+            color: #4338ca;
+        }
+
+        .calculate-btn {
+            width: 100%;
+            background: #4f46e5;
+            color: white;
+            margin-top: 18px;
+        }
+
+        .calculate-btn:hover {
+            background: #3730a3;
+        }
+
+        .reset-btn {
+            width: 100%;
+            background: #f3f4f6;
+            color: #333;
+        }
+
+        .result {
+            display: none;
+            margin-top: 25px;
+            padding: 20px;
+            border-radius: 12px;
+            background: #eef2ff;
+        }
+
+        .result h2 {
+            color: #4338ca;
+            text-align: center;
+        }
+
+        .result p {
+            font-size: 17px;
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .percentage {
+            font-size: 32px;
+            color: #4338ca;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .status {
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .error {
+            color: #dc2626;
+            font-size: 14px;
+            margin-top: 12px;
+        }
+
+        @media (max-width: 450px) {
+            .container {
+                padding: 16px;
+            }
+
+            h1 {
+                font-size: 22px;
+            }
+
+            .subject, .labels {
+                grid-template-columns: 1.2fr 1fr 1fr;
+                gap: 6px;
+            }
+
+            input {
+                padding: 9px 6px;
+                font-size: 13px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+    <h1>🎓 Marks Calculator</h1>
+    <p class="subtitle">Calculate your total marks and percentage easily.</p>
+
+    <div class="labels">
+        <span>Subject</span>
+        <span>Maximum Marks</span>
+        <span>Obtained Marks</span>
+    </div>
+
+    <div id="subjects">
+        <div class="subject">
+            <input type="text" placeholder="Subject 1" class="subject-name">
+            <input type="number" placeholder="100" class="maximum"
+                   min="1" step="any">
+            <input type="number" placeholder="Marks" class="obtained"
+                   min="0" step="any">
+        </div>
+
+        <div class="subject">
+            <input type="text" placeholder="Subject 2" class="subject-name">
+            <input type="number" placeholder="100" class="maximum"
+                   min="1" step="any">
+            <input type="number" placeholder="Marks" class="obtained"
+                   min="0" step="any">
+        </div>
+
+        <div class="subject">
+            <input type="text" placeholder="Subject 3" class="subject-name">
+            <input type="number" placeholder="100" class="maximum"
+                   min="1" step="any">
+            <input type="number" placeholder="Marks" class="obtained"
+                   min="0" step="any">
+        </div>
+    </div>
+
+    <button class="add-btn" onclick="addSubject()">
+        + Add Subject
+    </button>
+
+    <div id="error" class="error"></div>
+
+    <button class="calculate-btn" onclick="calculate()">
+        Calculate Result
+    </button>
+
+    <button class="reset-btn" onclick="resetCalculator()">
+        Reset
+    </button>
+
+    <div class="result" id="result">
+        <h2>Your Result</h2>
+
+        <p>
+            <span>Total Obtained Marks</span>
+            <strong id="total">0</strong>
+        </p>
+
+        <p>
+            <span>Total Maximum Marks</span>
+            <strong id="maximumTotal">0</strong>
+        </p>
+
+        <p>
+            <span>Subjects</span>
+            <strong id="subjectCount">0</strong>
+        </p>
+
+        <div class="percentage" id="percentage">0%</div>
+        <p class="status" id="status"></p>
+    </div>
+</div>
+
+<script>
+    function addSubject() {
+        const subjects = document.getElementById("subjects");
+        const count = subjects.querySelectorAll(".subject").length + 1;
+
+        const row = document.createElement("div");
+        row.className = "subject";
+
+        row.innerHTML = `
+            <input type="text" placeholder="Subject ${count}"
+                   class="subject-name" aria-label="Subject name">
+
+            <input type="number" placeholder="100"
+                   class="maximum" min="1" step="any"
+                   aria-label="Maximum marks">
+
+            <input type="number" placeholder="Marks"
+                   class="obtained" min="0" step="any"
+                   aria-label="Obtained marks">
+        `;
+
+        subjects.appendChild(row);
+        document.getElementById("result").style.display = "none";
+        document.getElementById("error").textContent = "";
+    }
+
+    function calculate() {
+        const rows = document.querySelectorAll(".subject");
+        let totalObtained = 0;
+        let totalMaximum = 0;
+        let count = 0;
+        const error = document.getElementById("error");
+
+        error.textContent = "";
+
+        for (const row of rows) {
+            const maximumInput = row.querySelector(".maximum");
+            const obtainedInput = row.querySelector(".obtained");
+
+            const maxText = maximumInput.value.trim();
+            const marksText = obtainedInput.value.trim();
+
+            // Ignore a completely empty subject row.
+            if (maxText === "" && marksText === "") {
+                continue;
+            }
+
+            const max = Number(maxText);
+            const marks = Number(marksText);
+
+            if (
+                maxText === "" || marksText === "" ||
+                !Number.isFinite(max) ||
+                !Number.isFinite(marks) ||
+                max <= 0 || marks < 0 || marks > max
+            ) {
+                error.textContent =
+                    "Please enter valid marks. Obtained marks must be between 0 and the maximum marks.";
+                document.getElementById("result").style.display = "none";
+                return;
+            }
+
+            totalMaximum += max;
+            totalObtained += marks;
+            count++;
+        }
+
+        if (count === 0) {
+            error.textContent =
+                "Please enter maximum and obtained marks for at least one subject.";
+            document.getElementById("result").style.display = "none";
+            return;
+        }
+
+        const percentage = (totalObtained / totalMaximum) * 100;
+
+        document.getElementById("total").textContent =
+            Number(totalObtained.toFixed(2));
+
+        document.getElementById("maximumTotal").textContent =
+            Number(totalMaximum.toFixed(2));
+
+        document.getElementById("subjectCount").textContent = count;
+
+        document.getElementById("percentage").textContent =
+            percentage.toFixed(2) + "%";
+
+        document.getElementById("status").textContent =
+            percentage >= 33 ? "Result: Pass (33% rule)" :
+            "Result: Below 33%";
+
+        document.getElementById("result").style.display = "block";
+    }
+
+    function resetCalculator() {
+        document.getElementById("subjects").innerHTML = `
+            <div class="subject">
+                <input type="text" placeholder="Subject 1"
+                       class="subject-name">
+                <input type="number" placeholder="100"
+                       class="maximum" min="1" step="any">
+                <input type="number" placeholder="Marks"
+                       class="obtained" min="0" step="any">
+            </div>
+            <div class="subject">
+                <input type="text" placeholder="Subject 2"
+                       class="subject-name">
+                <input type="number" placeholder="100"
+                       class="maximum" min="1" step="any">
+                <input type="number" placeholder="Marks"
+                       class="obtained" min="0" step="any">
+            </div>
+            <div class="subject">
+                <input type="text" placeholder="Subject 3"
+                       class="subject-name">
+                <input type="number" placeholder="100"
+                       class="maximum" min="1" step="any">
+                <input type="number" placeholder="Marks"
+                       class="obtained" min="0" step="any">
+            </div>
+        `;
+
+        document.getElementById("result").style.display = "none";
+        document.getElementById("error").textContent = "";
+    }
+</script>
+
+</body>
+</html>
